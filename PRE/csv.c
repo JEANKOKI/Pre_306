@@ -3,7 +3,7 @@
 #include <string.h>
 
 int fields_amount(FILE *file);
-int rows_amount(FILE *file);
+int rows_amount(FILE *file, int use_header);
 double min_in_field(FILE *file, int field, int use_header, char *header_field);
 double max_in_field(FILE *file, int field, int use_header, char *header_field);
 double mean_of_field(FILE *file, int field, int use_header, char *header_field);
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
                 printf("open file failed.\n");
                 return EXIT_FAILURE;
             }
-            printf("%d\n", rows_amount(file));
+            printf("%d\n", rows_amount(file, use_header));
             fclose(file);
         }
         else if (strcmp(argv[i], "-min") == 0)
@@ -196,18 +196,23 @@ int is_header(char *line)
 
 // -r function: count the number of rows
 // if the first line is a header, it should be ignored
-int rows_amount(FILE *file)
+int rows_amount(FILE *file, int use_header)
 {
     size_t len = 0;
     char *line = NULL;
     int count = 0;
-    int has_header = 0;
 
     // check if the first line is a header
     if (getline(&line, &len, file) != -1)
     {
-        has_header = is_header(line);
-        count++;
+        if (use_header && is_header(line))
+        {
+            count = 0;
+        }
+        else
+        {
+            count = 1;
+        }
     }
 
     // this start at the second line because the first line is a header
@@ -219,11 +224,6 @@ int rows_amount(FILE *file)
     fseek(file, 0, SEEK_SET);
     free(line);
 
-    // if the first line is a header, the count should be decreased by 1
-    if (has_header)
-    {
-        count--;
-    }
     return count;
 }
 
