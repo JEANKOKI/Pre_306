@@ -1,50 +1,60 @@
 #include <stdio.h>
-
-int equal_STRINGS( char *first_String, char *second_String);
-
-
-
-int equal_STRINGS( char *first_String, char *second_String){
-    int i=0;
-
-    while(first_String[i]!='\0'&& second_String[i]!='\0'){
-        if(first_String[i]!=second_String[i]){
-            return 0;
-        }
-        i++;
-        }
-    
-    return (first_String[i] == '\0' && second_String[i] == '\0');
-    
-}
+#include <string.h>
+#include <stdlib.h>
+#include "program.h"
 
 int main( int argc, char *argv[]){
-    if(argc<2){
-        printf("invalid amount of arguemets");
-            return 1;
+    if(argc<3){
+        printf("invalid amount of arguemets \n");
+            return EXIT_FAILURE;
     }
 
 
-    if( equal_STRINGS(argv[1],"-f")){
-        printf("Display the number of fields in the first record of file  \n ");
-                }
+    char *filename= argv[argc-1];  // since the filenam eis alwsy the end of arguement
 
-    else if(equal_STRINGS(argv[1],"-r")){
-        printf("Display the number of data records in \n");
-    }
+    int header_flag=0;
     
-    
-    else if(equal_STRINGS(argv[1],"-min")||
-            equal_STRINGS(argv[1],"-max")||
-            equal_STRINGS(argv[1],"-mean")||
-            equal_STRINGS(argv[1],"-h")){
-                if(argc<3){
-                      printf("Error another command is required \n");
+
+    for( int i=1;i <argc-1;i++){
+        if (strcmp(argv[i],"-h")==0){
+            header_flag=1;
+            break;
         }
+
+        // check for -h first like said in git 
     }
-        else if(equal_STRINGS(argv[1],"-records")){
-            printf("Display records \n");
+
+    for( int i=1; i <argc-1;i++){
+         if (strcmp(argv[i], "-f") == 0) {
+            printf("Fields in first record: %d\n", count_fields(filename));
         }
-        return 0;
+         else if(strcmp(argv[i], "-r") == 0) {
+             printf("Number of records: %d\n", count_records(filename, header_flag));
+    }
+         else if ((strcmp(argv[1], "-mean") == 0 || strcmp(argv[1], "-min") == 0 || strcmp(argv[1], "-max") == 0) && argc > 2) {
+          int field_index = atoi(argv[2]);
+
+        if (strcmp(argv[1], "-mean") == 0) {
+            printf("The mean is: %.2f\n", calculate_mean(filename, field_index));
+        } else if (strcmp(argv[1], "-min") == 0) {
+            printf("The min is : %.2f\n", calculate_min(filename, field_index));
+        } else if (strcmp(argv[1], "-max") == 0) {
+            printf("The max is : %.2f\n", calculate_max(filename, field_index));
+        }
+         }
+        else if (strcmp(argv[1], "-records") == 0 && argc > 3) {
+            int field_index = atoi(argv[2]);
+            char *value = argv[3];
+            display_records(filename, field_index, value);
+        }
+
+        else {
+            printf("Incorrect or incomplete command");
+            return EXIT_FAILURE;
+        }
+         return EXIT_SUCCESS;
+    } 
+ 
+    
        
-}
+        
