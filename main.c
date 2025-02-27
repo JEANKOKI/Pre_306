@@ -3,58 +3,207 @@
 #include <stdlib.h>
 #include "program.h"
 
-int main( int argc, char *argv[]){
-    if(argc<3){
+int main(int argc, char *argv[])
+{
+
+    if (argc < 3)
+    {
         printf("invalid amount of arguemets \n");
-            return EXIT_FAILURE;
+        return EXIT_FAILURE;
     }
 
+    int argsNoFile = argc - 1;         // argc - 1
+    char *filename = argv[argsNoFile]; // since the filename is always at the end of arguement
 
-    char *filename= argv[argc-1];  // since the filenam eis alwsy the end of arguement
+    // data to store before computation
+    int *flags = malloc(7 * sizeof(int));
+    flags[0] = 0;          // stores header specification
+    int flags_indexer = 1; // maintains order of input
 
-    int header_flag=0;
-    
+    // flag constants
+    int COUNT_FIELDS_FLAG = 2;
+    int COUNT_RECORDS_FLAG = 3;
+    int MAX_FLAG = 4;
+    int MIN_FLAG = 5;
+    int MEAN_FLAG = 6;
+    int GET_RECORDS_FLAG = 7;
 
-    for( int i=1;i <argc-1;i++){
-        if (strcmp(argv[i],"-h")==0){
-            header_flag=1;
-            break;
+    // input data
+    char *max_in = NULL;
+    char *min_in = NULL;
+    char *mean_in = NULL;
+    char *records_in_1 = NULL;
+    char *records_in_2 = NULL;
+
+    // {1:-1} Iterate from after the program name to before the filename (already stored)
+    // if -h can be anywhere in the arguments, we must check all args before computation
+    for (int i = 1; i < argsNoFile; i++)
+    {
+        if (strcmp(argv[i], "-h") == 0)
+        {
+            flags[0] = 1;
+            continue;
         }
 
-        // check for -h first like said in git 
+        else if (strcmp(argv[i], "-f") == 0)
+        {
+            flags[flags_indexer++] = COUNT_FIELDS_FLAG;
+            continue;
+        }
+
+        else if (strcmp(argv[i], "-r") == 0)
+        {
+            flags[flags_indexer++] = COUNT_RECORDS_FLAG;
+            continue;
+        }
+
+        else if (strcmp(argv[i], "-max") == 0)
+        {
+            flags[flags_indexer++] = MAX_FLAG;
+            if (i + 1 < argsNoFile)
+            {
+                max_in = argv[++i]; // increment i, then store. (skips over input data in succeeding iteration)
+            }
+            else
+            {
+                // ERROR!
+                return EXIT_FAILURE;
+            }
+            continue;
+        }
+
+        else if (strcmp(argv[i], "-min") == 0)
+        {
+            flags[flags_indexer++] = MIN_FLAG;
+            if (i + 1 < argsNoFile)
+            {
+                min_in = argv[++i]; // increment i, then store. (skips over input data in succeeding iteration)
+            }
+            else
+            {
+                // ERROR!
+                return EXIT_FAILURE;
+            }
+            continue;
+        }
+
+        else if (strcmp(argv[i], "-mean") == 0)
+        {
+            flags[flags_indexer++] = MEAN_FLAG;
+            if (i + 1 < argsNoFile)
+            {
+                mean_in = argv[++i]; // increment i, then store. (skips over input data in succeeding iteration)
+            }
+            else
+            {
+                // ERROR!
+                return EXIT_FAILURE;
+            }
+            continue;
+        }
+
+        else if (strcmp(argv[i], "-records") == 0)
+        {
+            flags[flags_indexer++] = GET_RECORDS_FLAG;
+            if (i + 1 < argsNoFile)
+            {
+                records_in_1 = argv[++i]; // increment i, then store. (skips over input data in succeeding iteration)
+            }
+            else
+            {
+                // ERROR!
+                return EXIT_FAILURE;
+            }
+            if (i + 1 < argsNoFile)
+            {
+                records_in_2 = argv[++i]; // increment i, then store. (skips over input data in succeeding iteration)
+            }
+            else
+            {
+                // ERROR!
+                return EXIT_FAILURE;
+            }
+            continue;
+        }
     }
 
-    for( int i=1; i <argc-1;i++){
-         if (strcmp(argv[i], "-f") == 0) {
-            printf("Fields in first record: %d\n", count_fields(filename));
+    // if header is specified, compute by name...
+    // else, by index.
+    if (flags[0])
+    {
+        // assess the flags in order
+        for (int i = 1; i < 7; i++)
+        {
+            if (flags[i] == COUNT_FIELDS_FLAG)
+            {
+
+                count_fields(filename);
+                continue;
+            }
+            if (flags[i] == COUNT_RECORDS_FLAG)
+            {
+                count_records(filename, 1);
+                continue;
+            }
+            if (flags[i] == MAX_FLAG)
+            {
+                calculate_max_by_name(filename, max_in);
+                continue;
+            }
+            if (flags[i] == MIN_FLAG)
+            {
+                calculate_min_by_name(filename, min_in);
+                continue;
+            }
+            if (flags[i] == MEAN_FLAG)
+            {
+                calculate_mean_by_name(filename, mean_in);
+                continue;
+            }
+            if (flags[i] == GET_RECORDS_FLAG)
+            {
+                display_records_by_name(filename, records_in_1, records_in_2);
+                continue;
+            }
         }
-         else if(strcmp(argv[i], "-r") == 0) {
-             printf("Number of records: %d\n", count_records(filename, header_flag));
     }
-         else if ((strcmp(argv[1], "-mean") == 0 || strcmp(argv[1], "-min") == 0 || strcmp(argv[1], "-max") == 0) && argc > 2) {
-          int field_index = atoi(argv[2]);
+    else
+    {
+        // assess the flags in order
+        for (int i = 1; i < 7; i++)
+        {
+            if (flags[i] == COUNT_FIELDS_FLAG)
+            {
+                count_fields(filename);
+                continue;
+            }
+            if (flags[i] == COUNT_RECORDS_FLAG)
+            {
+                count_records(filename, 0);
+                continue;
+            }
+            if (flags[i] == MAX_FLAG)
+            {
+                calculate_max(filename, atoi(max_in));
+                continue;
+            }
+            if (flags[i] == MIN_FLAG)
+            {
+                calculate_min(filename, atoi(min_in));
+                continue;
+            }
+            if (flags[i] == MEAN_FLAG)
+            {
+                calculate_mean(filename, atoi(mean_in));
+                continue;
+            }
+            if (flags[i] == GET_RECORDS_FLAG)
+            {
+                display_records(filename, atoi(records_in_1), atoi(records_in_2));
+                continue;
+            }
+        }
+    }
 
-        if (strcmp(argv[1], "-mean") == 0) {
-            printf("The mean is: %.2f\n", calculate_mean(filename, field_index));
-        } else if (strcmp(argv[1], "-min") == 0) {
-            printf("The min is : %.2f\n", calculate_min(filename, field_index));
-        } else if (strcmp(argv[1], "-max") == 0) {
-            printf("The max is : %.2f\n", calculate_max(filename, field_index));
-        }
-         }
-        else if (strcmp(argv[1], "-records") == 0 && argc > 3) {
-            int field_index = atoi(argv[2]);
-            char *value = argv[3];
-            display_records(filename, field_index, value);
-        }
-
-        else {
-            printf("Incorrect or incomplete command");
-            return EXIT_FAILURE;
-        }
-         return EXIT_SUCCESS;
-    } 
- 
-    
-       
-        
+    return EXIT_SUCCESS;
+}
