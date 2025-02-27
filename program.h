@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
+int is_valid_number(const char *str);
 
 int count_fields(const char *filename);
 int count_records(const char *filename, int has_header);
