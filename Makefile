@@ -11,7 +11,7 @@ csv.o: csv.c program.h
 program.o: program.c program.h
 
 %.o: %.c
-  $(CC) -o $@ -c $< $(CFLAGS)
+	$(CC) -o $@ -c $< $(CFLAGS)
 
 clean:
 	rm -f csv *.o
