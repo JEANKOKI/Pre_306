@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 // TODO: HANDLE CELLS IN QUOTES
 
@@ -39,7 +40,7 @@ int count_fields(const char *filename) {
     fgets(line, sizeof(line), file);
     char *field;
     field = strtok(line, ",");
-    while (line) {
+    while (field) {
         count++;
         field = strtok(NULL, ",");
     }
@@ -233,7 +234,7 @@ void display_records_by_name(const char *filename, const char *field_name, const
     display_records(filename, idx, value);
 }
 
-int get_field_index_by_name(FILE *filename, const char *field_name) {
+int get_field_index_by_name(const char *filename, const char *field_name) {
     FILE *file = fopen(filename, "r");
     if (!file) exit(EXIT_FAILURE);
 
@@ -248,7 +249,7 @@ int get_field_index_by_name(FILE *filename, const char *field_name) {
     fgets(line, sizeof(line), file);
     char *field;
     field = strtok(line, ",");
-    while (line) {
+    while (field) {
         idx++;
         if (strcmp(field, field_name) == 0) break;
         field = strtok(NULL, ",");
