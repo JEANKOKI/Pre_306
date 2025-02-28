@@ -36,8 +36,7 @@ int count_fields(const char *filename) {
         fclose(file);
         exit(EXIT_FAILURE);
     }
-
-    fgets(line, sizeof(line), file);
+    
     char *field;
     field = strtok(line, ",");
     while (field) {
@@ -246,7 +245,6 @@ int get_field_index_by_name(const char *filename, const char *field_name) {
         exit(EXIT_FAILURE);
     }
 
-    fgets(line, sizeof(line), file);
     char *field;
     field = strtok(line, ",");
     while (field) {
