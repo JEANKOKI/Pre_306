@@ -131,7 +131,7 @@ double calculate_max(const char *filename, int field_index) {
 
                 // check if number
                 if (is_valid_number(num_text)) {
-                    _max = max(_max, atof(num_text));
+                    _max = fmax(_max, atof(num_text));
                     count++;
                 }
                 break;
@@ -170,7 +170,7 @@ double calculate_min(const char *filename, int field_index) {
 
                 // check if number
                 if (is_valid_number(num_text)) {
-                    _min = min(_min, atof(num_text));
+                    _min = fmin(_min, atof(num_text));
                     count++;
                 }
                 break;
@@ -216,7 +216,7 @@ void display_records(const char *filename, int field_index, const char *value) {
         num_text = strtok(line, ",");
         int idx = 0;
 
-        while (line) {
+        while (num_text) {
             if (idx == field_index && strcmp(value, num_text) == 0) {
                 printf("%s", line);
                 break;
