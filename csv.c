@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
             }
             if (flags[i] == GET_RECORDS_FLAG)
             {
-                display_records(filename, atoi(records_in_1), atoi(records_in_2));
+                display_records(filename, atoi(records_in_1), records_in_2);
                 continue;
             }
         }
